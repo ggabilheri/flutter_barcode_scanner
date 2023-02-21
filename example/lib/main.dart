@@ -14,6 +14,8 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   String _scanBarcode = 'Unknown';
 
+  int cameraId = 0;
+
   @override
   void initState() {
     super.initState();
@@ -30,7 +32,7 @@ class _MyAppState extends State<MyApp> {
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
       barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
-          '#ff6666', 'Cancel', true, ScanMode.QR);
+          '#ff6666', 'Cancel', true, ScanMode.QR, cameraId);
       print(barcodeScanRes);
     } on PlatformException {
       barcodeScanRes = 'Failed to get platform version.';
@@ -52,7 +54,7 @@ class _MyAppState extends State<MyApp> {
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
       barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
-          '#ff6666', 'Cancel', true, ScanMode.BARCODE);
+          '#ff6666', 'Cancel', true, ScanMode.BARCODE, 0);
       print(barcodeScanRes);
     } on PlatformException {
       barcodeScanRes = 'Failed to get platform version.';
@@ -71,27 +73,41 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        home: Scaffold(
-            appBar: AppBar(title: const Text('Barcode scan')),
-            body: Builder(builder: (BuildContext context) {
-              return Container(
-                  alignment: Alignment.center,
-                  child: Flex(
-                      direction: Axis.vertical,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        ElevatedButton(
-                            onPressed: () => scanBarcodeNormal(),
-                            child: Text('Start barcode scan')),
-                        ElevatedButton(
-                            onPressed: () => scanQR(),
-                            child: Text('Start QR scan')),
-                        ElevatedButton(
-                            onPressed: () => startBarcodeScanStream(),
-                            child: Text('Start barcode scan stream')),
-                        Text('Scan result : $_scanBarcode\n',
-                            style: TextStyle(fontSize: 20))
-                      ]));
-            })));
+      home: Scaffold(
+        appBar: AppBar(title: const Text('Barcode scan')),
+        body: Builder(builder: (BuildContext context) {
+          return Container(
+              alignment: Alignment.center,
+              child: Flex(
+                  direction: Axis.vertical,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    ElevatedButton(
+                        onPressed: () => scanBarcodeNormal(),
+                        child: Text('Start barcode scan')),
+                    ElevatedButton(
+                        onPressed: () => scanQR(),
+                        child: Text('Start QR scan')),
+                    ElevatedButton(
+                        onPressed: () => startBarcodeScanStream(),
+                        child: Text('Start barcode scan stream')),
+                    Text('Scan result : $_scanBarcode\n',
+                        style: TextStyle(fontSize: 20))
+                  ]));
+        }),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            setState(() {
+              if (cameraId == 0) {
+                cameraId = 1;
+              } else {
+                cameraId = 0;
+              }
+            });
+          },
+          child: Text('Camera $cameraId'),
+        ),
+      ),
+    );
   }
 }

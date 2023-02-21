@@ -74,6 +74,8 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
     // constants used to pass extra data in the intent
     public static final String BarcodeObject = "Barcode";
 
+    private int cameraId =0;
+
     private CameraSource mCameraSource;
     private CameraSourcePreview mPreview;
     private GraphicOverlay<BarcodeGraphic> mGraphicOverlay;
@@ -112,6 +114,8 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
             String buttonText = "";
             try {
                     buttonText = (String) getIntent().getStringExtra("cancelButtonText");
+                    cameraId = (int) getIntent().getIntExtra("cameraId",0);
+
         } catch (Exception e) {
             buttonText = "Cancel";
             Log.e("BCActivity:onCreate()", "onCreate: " + e.getLocalizedMessage());
@@ -139,7 +143,11 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
         // permission is not granted yet, request permission.
         int rc = ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
             if (rc == PackageManager.PERMISSION_GRANTED) {
-                createCameraSource(autoFocus, useFlash, CameraSource.CAMERA_FACING_FRONT);
+                if (cameraId == 0) {
+                   createCameraSource(autoFocus, useFlash, CameraSource.CAMERA_FACING_FRONT);
+                } else {
+                   createCameraSource(autoFocus, useFlash, CameraSource.CAMERA_FACING_BACK);
+                }
             } else {
                 requestCameraPermission();
             }

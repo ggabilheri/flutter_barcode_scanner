@@ -48,6 +48,7 @@ public class FlutterBarcodeScannerPlugin implements MethodCallHandler, ActivityR
     public static String lineColor = "";
     public static boolean isShowFlashIcon = false;
     public static boolean isContinuousScan = false;
+    public static int cameraId = 0;
     static EventChannel.EventSink barcodeStream;
     private EventChannel eventChannel;
 
@@ -100,6 +101,7 @@ public class FlutterBarcodeScannerPlugin implements MethodCallHandler, ActivityR
                 arguments = (Map<String, Object>) call.arguments;
                 lineColor = (String) arguments.get("lineColor");
                 isShowFlashIcon = (boolean) arguments.get("isShowFlashIcon");
+                cameraId = (int) arguments.get("cameraId");
                 if (null == lineColor || lineColor.equalsIgnoreCase("")) {
                     lineColor = "#DC143C";
                 }
@@ -115,16 +117,17 @@ public class FlutterBarcodeScannerPlugin implements MethodCallHandler, ActivityR
 
                 isContinuousScan = (boolean) arguments.get("isContinuousScan");
 
-                startBarcodeScannerActivityView((String) arguments.get("cancelButtonText"), isContinuousScan);
+                startBarcodeScannerActivityView((String) arguments.get("cancelButtonText"), isContinuousScan,cameraId);
             }
         } catch (Exception e) {
             Log.e(TAG, "onMethodCall: " + e.getLocalizedMessage());
         }
     }
 
-    private void startBarcodeScannerActivityView(String buttonText, boolean isContinuousScan) {
+    private void startBarcodeScannerActivityView(String buttonText, boolean isContinuousScan,int cameraId) {
         try {
-            Intent intent = new Intent(activity, BarcodeCaptureActivity.class).putExtra("cancelButtonText", buttonText);
+            Intent intent = new Intent(activity, BarcodeCaptureActivity.class).putExtra("cancelButtonText", buttonText)
+                        .putExtra("cameraId", cameraId);
             if (isContinuousScan) {
                 activity.startActivity(intent);
             } else {
