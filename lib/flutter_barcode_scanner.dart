@@ -20,13 +20,20 @@ class FlutterBarcodeScanner {
 
   static int cameraId = 0;
 
+  static bool isHakinda = false;
+
   /// Scan with the camera until a barcode is identified, then return.
   ///
   /// Shows a scan line with [lineColor] over a scan window. A flash icon is
   /// displayed if [isShowFlashIcon] is true. The text of the cancel button can
   /// be customized with the [cancelButtonText] string.
-  static Future<String> scanBarcode(String lineColor, String cancelButtonText,
-      bool isShowFlashIcon, ScanMode scanMode, int cameraId) async {
+  static Future<String> scanBarcode(
+      String lineColor,
+      String cancelButtonText,
+      bool isShowFlashIcon,
+      ScanMode scanMode,
+      int cameraId,
+      bool isHakinda) async {
     if (cancelButtonText.isEmpty) {
       cancelButtonText = 'Cancelar';
     }
@@ -39,6 +46,7 @@ class FlutterBarcodeScanner {
       'isContinuousScan': false,
       'scanMode': scanMode.index,
       'cameraId': cameraId,
+      'isHakinda': isHakinda,
     };
 
     /// Get barcode scan result

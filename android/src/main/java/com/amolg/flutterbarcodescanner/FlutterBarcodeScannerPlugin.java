@@ -48,6 +48,7 @@ public class FlutterBarcodeScannerPlugin implements MethodCallHandler, ActivityR
     public static String lineColor = "";
     public static boolean isShowFlashIcon = false;
     public static boolean isContinuousScan = false;
+    public static boolean isHakinda = false;
     public static int cameraId = 0;
     static EventChannel.EventSink barcodeStream;
     private EventChannel eventChannel;
@@ -102,6 +103,7 @@ public class FlutterBarcodeScannerPlugin implements MethodCallHandler, ActivityR
                 lineColor = (String) arguments.get("lineColor");
                 isShowFlashIcon = (boolean) arguments.get("isShowFlashIcon");
                 cameraId = (int) arguments.get("cameraId");
+                isHakinda = (boolean) arguments.get("isHakinda");
                 if (null == lineColor || lineColor.equalsIgnoreCase("")) {
                     lineColor = "#DC143C";
                 }
@@ -125,8 +127,12 @@ public class FlutterBarcodeScannerPlugin implements MethodCallHandler, ActivityR
     }
 
     private void startBarcodeScannerActivityView(String buttonText, boolean isContinuousScan,int cameraId) {
+        if (isHakinda) {
+            cameraId = 1;
+        }
         try {
-            Intent intent = new Intent(activity, BarcodeCaptureActivity.class).putExtra("cancelButtonText", buttonText)
+            Intent intent = new Intent(activity, BarcodeCaptureActivity.class)
+                        .putExtra("cancelButtonText", buttonText)
                         .putExtra("cameraId", cameraId);
             if (isContinuousScan) {
                 activity.startActivity(intent);
@@ -155,18 +161,23 @@ public class FlutterBarcodeScannerPlugin implements MethodCallHandler, ActivityR
                     try {
                         Barcode barcode = data.getParcelableExtra(BarcodeCaptureActivity.BarcodeObject);
                         String barcodeResult = barcode.rawValue;
+                        Log.e("Saindo onActivityResult com sucesso","<<<<=================");
                         pendingResult.success(barcodeResult);
                     } catch (Exception e) {
                         pendingResult.success("-1");
+                        return false;
                     }
                 } else {
                     pendingResult.success("-1");
+                    return false;
                 }
                 pendingResult = null;
                 arguments = null;
                 return true;
             } else {
                 pendingResult.success("-1");
+                return false;
+
             }
         }
         return false;
@@ -186,7 +197,7 @@ public class FlutterBarcodeScannerPlugin implements MethodCallHandler, ActivityR
         try {
             barcodeStream = null;
         } catch (Exception e) {
-
+            Log.e("Saindo pelo cancel","<<<< ");
         }
     }
 
