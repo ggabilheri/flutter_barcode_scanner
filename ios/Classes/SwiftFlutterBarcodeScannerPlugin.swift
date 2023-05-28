@@ -12,6 +12,16 @@ enum ScanMode:Int{
     }
 }
 
+enum ScanCamera:Int{
+    case BACK
+    case FRONT
+    case DEFAULT
+    
+    var index: Int {
+        return rawValue
+    }
+}
+
 public class SwiftFlutterBarcodeScannerPlugin: NSObject, FlutterPlugin, ScanBarcodeDelegate,FlutterStreamHandler {
     
     public static var viewController = UIViewController()
@@ -22,6 +32,7 @@ public class SwiftFlutterBarcodeScannerPlugin: NSObject, FlutterPlugin, ScanBarc
     public static var isContinuousScan:Bool=false
     static var barcodeStream:FlutterEventSink?=nil
     public static var scanMode = ScanMode.QR.index
+    public static var scanCamera = ScanCamera.FRONT.index
     
     public static func register(with registrar: FlutterPluginRegistrar) {
         viewController = (UIApplication.shared.delegate?.window??.rootViewController)!
@@ -87,7 +98,17 @@ public class SwiftFlutterBarcodeScannerPlugin: NSObject, FlutterPlugin, ScanBarc
         }else{
             SwiftFlutterBarcodeScannerPlugin.scanMode = ScanMode.QR.index
         }
-        
+
+        if let scanCamera = args["cameraId"] as? Int {
+            if scanCamera == ScanCamera.DEFAULT.index {
+                SwiftFlutterBarcodeScannerPlugin.scanCamera = ScanCamera.FRONT.index
+            }else{
+                SwiftFlutterBarcodeScannerPlugin.scanCamera = scanCamera
+            }
+        }else{
+            SwiftFlutterBarcodeScannerPlugin.scanCamera = ScanCamera.FRONT.index
+        }
+
         pendingResult=result
         let controller = BarcodeScannerViewController()
         controller.delegate = self
@@ -254,9 +275,12 @@ class BarcodeScannerViewController: UIViewController {
     
     // Inititlize components
     func initBarcodeComponents(){
-        
-        let deviceDiscoverySession = AVCaptureDevice.DiscoverySession(deviceTypes: [.builtInWideAngleCamera], mediaType: AVMediaType.video, position: .back)
-        // Get the back-facing camera for capturing videos
+        var deviceDiscoverySession = AVCaptureDevice.DiscoverySession(deviceTypes: [.builtInWideAngleCamera], mediaType: AVMediaType.video, position: .front)
+        print(SwiftFlutterBarcodeScannerPlugin.scanCamera)
+        if (SwiftFlutterBarcodeScannerPlugin.scanCamera == ScanCamera.BACK.index) {
+            deviceDiscoverySession = AVCaptureDevice.DiscoverySession(deviceTypes: [.builtInWideAngleCamera], mediaType: AVMediaType.video, position: .back)
+        }
+        // Get the front? back-facing camera for capturing videos
         guard let captureDevice = deviceDiscoverySession.devices.first else {
             print("Failed to get the camera device")
             return

@@ -75,6 +75,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
     public static final String BarcodeObject = "Barcode";
 
     private int cameraId =0;
+    private boolean isHakinda =false;
 
     private CameraSource mCameraSource;
     private CameraSourcePreview mPreview;
@@ -115,6 +116,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
             try {
                     buttonText = (String) getIntent().getStringExtra("cancelButtonText");
                     cameraId = (int) getIntent().getIntExtra("cameraId",0);
+                    isHakinda = (boolean) getIntent().getBooleanExtra("isHakinda",false);
 
         } catch (Exception e) {
             buttonText = "Cancel";
@@ -128,10 +130,11 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
         imgViewBarcodeCaptureUseFlash = findViewById(R.id.imgViewBarcodeCaptureUseFlash);
         imgViewBarcodeCaptureUseFlash.setOnClickListener(this);
         imgViewBarcodeCaptureUseFlash.setVisibility(FlutterBarcodeScannerPlugin.isShowFlashIcon ? View.VISIBLE : View.GONE);
-
-        imgViewSwitchCamera = findViewById(R.id.imgViewSwitchCamera);
-        imgViewSwitchCamera.setOnClickListener(this);
-
+        if (!isHakinda)
+            {
+                imgViewSwitchCamera = findViewById(R.id.imgViewSwitchCamera);
+                imgViewSwitchCamera.setOnClickListener(this);
+            }
         mPreview = findViewById(R.id.preview);
         mGraphicOverlay = findViewById(R.id.graphicOverlay);
 
@@ -236,7 +239,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
         // at long distances.
         CameraSource.Builder builder = new CameraSource.Builder(getApplicationContext(), barcodeDetector)
                 .setFacing(cameraFacing)
-                .setRequestedPreviewSize(800, 600)
+                .setRequestedPreviewSize(1600, 1024)
                 .setRequestedFps(30.0f)
                 .setFlashMode(useFlash ? Camera.Parameters.FLASH_MODE_TORCH : null);
 

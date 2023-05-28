@@ -133,7 +133,8 @@ public class FlutterBarcodeScannerPlugin implements MethodCallHandler, ActivityR
         try {
             Intent intent = new Intent(activity, BarcodeCaptureActivity.class)
                         .putExtra("cancelButtonText", buttonText)
-                        .putExtra("cameraId", cameraId);
+                        .putExtra("cameraId", cameraId)
+                        .putExtra("isHakinda", isHakinda);
             if (isContinuousScan) {
                 activity.startActivity(intent);
             } else {
