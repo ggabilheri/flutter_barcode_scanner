@@ -76,6 +76,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
 
     private int cameraId =0;
     private boolean isHakinda =false;
+    private boolean canSwitchCamera = false;
 
     private CameraSource mCameraSource;
     private CameraSourcePreview mPreview;
@@ -117,7 +118,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
                     buttonText = (String) getIntent().getStringExtra("cancelButtonText");
                     cameraId = (int) getIntent().getIntExtra("cameraId",0);
                     isHakinda = (boolean) getIntent().getBooleanExtra("isHakinda",false);
-
+                    canSwitchCamera = (boolean) getIntent().getBooleanExtra("canSwitchCamera",false);
         } catch (Exception e) {
             buttonText = "Cancel";
             Log.e("BCActivity:onCreate()", "onCreate: " + e.getLocalizedMessage());
@@ -130,7 +131,16 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
         imgViewBarcodeCaptureUseFlash = findViewById(R.id.imgViewBarcodeCaptureUseFlash);
         imgViewBarcodeCaptureUseFlash.setOnClickListener(this);
         imgViewBarcodeCaptureUseFlash.setVisibility(FlutterBarcodeScannerPlugin.isShowFlashIcon ? View.VISIBLE : View.GONE);
-        if (!isHakinda)
+        // show switch camera buttom 
+        if (canSwitchCamera)
+            {
+                Log.e("Can Switch Camera: ", "on");
+            }
+        else
+            {
+                Log.e("Can Switch Camera: ", "off");
+            }
+        if (canSwitchCamera)
             {
                 imgViewSwitchCamera = findViewById(R.id.imgViewSwitchCamera);
                 imgViewSwitchCamera.setOnClickListener(this);
@@ -428,12 +438,14 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
             barcode.displayValue = "-1";
             FlutterBarcodeScannerPlugin.onBarcodeScanReceiver(barcode);
             finish();
-        } else if (i == R.id.imgViewSwitchCamera) {
-            int currentFacing = mCameraSource.getCameraFacing();
-            boolean autoFocus = mCameraSource.getFocusMode() != null;
-            boolean useFlash = flashStatus == USE_FLASH.ON.ordinal();
-            createCameraSource(autoFocus, useFlash, getInverseCameraFacing(currentFacing));
-            startCameraSource();
+        } else if (canSwitchCamera) {
+            if (i == R.id.imgViewSwitchCamera) {
+                int currentFacing = mCameraSource.getCameraFacing();
+                boolean autoFocus = mCameraSource.getFocusMode() != null;
+                boolean useFlash = flashStatus == USE_FLASH.ON.ordinal();
+                createCameraSource(autoFocus, useFlash, getInverseCameraFacing(currentFacing));
+                startCameraSource();
+            }
         }
     }
 

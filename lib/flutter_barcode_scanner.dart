@@ -21,6 +21,7 @@ class FlutterBarcodeScanner {
   static int cameraId = 0;
 
   static bool isHakinda = false;
+  static bool canSwitchCamera = false;
 
   /// Scan with the camera until a barcode is identified, then return.
   ///
@@ -33,7 +34,8 @@ class FlutterBarcodeScanner {
       bool isShowFlashIcon,
       ScanMode scanMode,
       int cameraId,
-      bool isHakinda) async {
+      bool isHakinda,
+      bool canSwitchCamera) async {
     if (cancelButtonText.isEmpty) {
       cancelButtonText = 'Cancelar';
     }
@@ -47,6 +49,7 @@ class FlutterBarcodeScanner {
       'scanMode': scanMode.index,
       'cameraId': cameraId,
       'isHakinda': isHakinda,
+      'canSwitchCamera': canSwitchCamera
     };
 
     /// Get barcode scan result

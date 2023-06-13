@@ -49,6 +49,7 @@ public class FlutterBarcodeScannerPlugin implements MethodCallHandler, ActivityR
     public static boolean isShowFlashIcon = false;
     public static boolean isContinuousScan = false;
     public static boolean isHakinda = false;
+    public static boolean canSwitchCamera = false;
     public static int cameraId = 0;
     static EventChannel.EventSink barcodeStream;
     private EventChannel eventChannel;
@@ -104,6 +105,7 @@ public class FlutterBarcodeScannerPlugin implements MethodCallHandler, ActivityR
                 isShowFlashIcon = (boolean) arguments.get("isShowFlashIcon");
                 cameraId = (int) arguments.get("cameraId");
                 isHakinda = (boolean) arguments.get("isHakinda");
+                canSwitchCamera = (boolean) arguments.get("canSwitchCamera");
                 if (null == lineColor || lineColor.equalsIgnoreCase("")) {
                     lineColor = "#DC143C";
                 }
@@ -119,14 +121,14 @@ public class FlutterBarcodeScannerPlugin implements MethodCallHandler, ActivityR
 
                 isContinuousScan = (boolean) arguments.get("isContinuousScan");
 
-                startBarcodeScannerActivityView((String) arguments.get("cancelButtonText"), isContinuousScan,cameraId);
+                startBarcodeScannerActivityView((String) arguments.get("cancelButtonText"), isContinuousScan,cameraId,canSwitchCamera);
             }
         } catch (Exception e) {
             Log.e(TAG, "onMethodCall: " + e.getLocalizedMessage());
         }
     }
 
-    private void startBarcodeScannerActivityView(String buttonText, boolean isContinuousScan,int cameraId) {
+    private void startBarcodeScannerActivityView(String buttonText, boolean isContinuousScan,int cameraId, boolean canSwitchCamera) {
         if (isHakinda) {
             cameraId = 1;
         }
@@ -134,6 +136,7 @@ public class FlutterBarcodeScannerPlugin implements MethodCallHandler, ActivityR
             Intent intent = new Intent(activity, BarcodeCaptureActivity.class)
                         .putExtra("cancelButtonText", buttonText)
                         .putExtra("cameraId", cameraId)
+                        .putExtra("canSwitchCamera", canSwitchCamera)
                         .putExtra("isHakinda", isHakinda);
             if (isContinuousScan) {
                 activity.startActivity(intent);

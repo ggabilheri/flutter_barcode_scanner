@@ -33,6 +33,7 @@ public class SwiftFlutterBarcodeScannerPlugin: NSObject, FlutterPlugin, ScanBarc
     static var barcodeStream:FlutterEventSink?=nil
     public static var scanMode = ScanMode.QR.index
     public static var scanCamera = ScanCamera.FRONT.index
+    public static var canSwitchCamera:Bool=false
     
     public static func register(with registrar: FlutterPluginRegistrar) {
         viewController = (UIApplication.shared.delegate?.window??.rootViewController)!
@@ -191,6 +192,7 @@ class BarcodeScannerViewController: UIViewController {
     private var scanLine: UIView = UIView()
     var screenSize = UIScreen.main.bounds
     private var isOrientationPortrait = true
+    private var canSwitchCamera = false
     var screenHeight:CGFloat = 0
     let captureMetadataOutput = AVCaptureMetadataOutput()
     
@@ -374,7 +376,7 @@ class BarcodeScannerViewController: UIViewController {
             qrCodeFrameView.layoutSubviews()
             qrCodeFrameView.setNeedsUpdateConstraints()
             self.view.bringSubviewToFront(cancelButton)
-            self.view.bringSubviewToFront(switchCameraButton)
+             if (canSwitchCamera){self.view.bringSubviewToFront(switchCameraButton)}
         }
         setConstraintsForControls()
         self.drawLine()
@@ -386,7 +388,7 @@ class BarcodeScannerViewController: UIViewController {
         self.view.addSubview(bottomView)
         self.view.addSubview(cancelButton)
         self.view.addSubview(flashIcon)
-        self.view.addSubview(switchCameraButton)
+         if (canSwitchCamera) {self.view.addSubview(switchCameraButton)}
         
         bottomView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant:0).isActive = true
         bottomView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant:0).isActive = true
@@ -404,11 +406,13 @@ class BarcodeScannerViewController: UIViewController {
         cancelButton.bottomAnchor.constraint(equalTo:view.bottomAnchor,constant: 0).isActive=true
         cancelButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant:10).isActive = true
         
-        switchCameraButton.translatesAutoresizingMaskIntoConstraints = false
-        // A little bit to the right.
-        switchCameraButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 10).isActive = true
-        switchCameraButton.heightAnchor.constraint(equalToConstant: 70.0).isActive = true
-        switchCameraButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true
+         if (canSwitchCamera)
+        {   switchCameraButton.translatesAutoresizingMaskIntoConstraints = false
+            // A little bit to the right.
+            switchCameraButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 10).isActive = true
+            switchCameraButton.heightAnchor.constraint(equalToConstant: 70.0).isActive = true
+            switchCameraButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true
+        }
     }
     
     /// Flash button click event listener
